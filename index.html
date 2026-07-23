@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>교실 공기질 대시보드</title>
 
   <style>
@@ -12,41 +11,48 @@
     }
 
     :root {
-      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-bg: rgba(255, 255, 255, 0.92);
       --text-main: #1f2937;
       --text-sub: #64748b;
-      --shadow: rgba(0, 0, 0, 0.12);
+      --shadow: rgba(0, 0, 0, 0.14);
     }
 
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Arial, "Noto Sans KR", sans-serif;
       color: var(--text-main);
-      transition: background 0.8s ease, color 0.8s ease;
       overflow-x: hidden;
+      transition: background 0.8s ease, color 0.8s ease;
     }
 
+    /* 낮 배경 */
     body.day-theme {
-      background: linear-gradient(135deg, #dbeafe 0%, #f8fafc 45%, #fff7ed 100%);
-      --card-bg: rgba(255, 255, 255, 0.94);
+      background:
+        radial-gradient(circle at 85% 12%, rgba(250, 204, 21, 0.55) 0, transparent 120px),
+        linear-gradient(135deg, #bfdbfe 0%, #eff6ff 45%, #fff7ed 100%);
+      --card-bg: rgba(255, 255, 255, 0.92);
       --text-main: #1f2937;
       --text-sub: #64748b;
-      --shadow: rgba(0, 0, 0, 0.12);
+      --shadow: rgba(0, 0, 0, 0.14);
     }
 
+    /* 밤 배경 */
     body.night-theme {
-      background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 45%, #020617 100%);
+      background:
+        radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.28) 0, transparent 95px),
+        radial-gradient(circle at top, #1e3a8a 0%, #0f172a 45%, #020617 100%);
       --card-bg: rgba(15, 23, 42, 0.88);
       --text-main: #f8fafc;
       --text-sub: #cbd5e1;
-      --shadow: rgba(0, 0, 0, 0.35);
+      --shadow: rgba(0, 0, 0, 0.45);
     }
 
     .sky-bg {
       position: fixed;
       inset: 0;
-      pointer-events: none;
       z-index: -1;
+      pointer-events: none;
       overflow: hidden;
     }
 
@@ -54,24 +60,24 @@
       position: absolute;
       top: 60px;
       right: 90px;
-      width: 90px;
-      height: 90px;
+      width: 95px;
+      height: 95px;
       border-radius: 50%;
-      background: radial-gradient(circle, #fde68a 0%, #facc15 55%, #fb923c 100%);
-      box-shadow: 0 0 45px rgba(250, 204, 21, 0.8);
+      background: radial-gradient(circle, #fef3c7 0%, #facc15 55%, #fb923c 100%);
+      box-shadow: 0 0 45px rgba(250, 204, 21, 0.85);
       opacity: 0;
       transition: opacity 0.8s ease;
     }
 
     .moon {
       position: absolute;
-      top: 70px;
+      top: 65px;
       right: 100px;
-      width: 78px;
-      height: 78px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
       background: #f8fafc;
-      box-shadow: 0 0 35px rgba(248, 250, 252, 0.9);
+      box-shadow: 0 0 38px rgba(248, 250, 252, 0.95);
       opacity: 0;
       transition: opacity 0.8s ease;
     }
@@ -80,9 +86,9 @@
       content: "";
       position: absolute;
       top: 8px;
-      left: 22px;
-      width: 70px;
-      height: 70px;
+      left: 25px;
+      width: 75px;
+      height: 75px;
       border-radius: 50%;
       background: #0f172a;
     }
@@ -97,9 +103,7 @@
 
     .star {
       position: absolute;
-      width: 3px;
-      height: 3px;
-      background: white;
+      background: #ffffff;
       border-radius: 50%;
       opacity: 0;
       animation: twinkle 2s infinite alternate;
@@ -109,12 +113,15 @@
       opacity: 1;
     }
 
+    body.day-theme .star {
+      opacity: 0;
+    }
+
     @keyframes twinkle {
       from {
         opacity: 0.25;
         transform: scale(0.8);
       }
-
       to {
         opacity: 1;
         transform: scale(1.4);
@@ -122,10 +129,10 @@
     }
 
     .app {
-      min-height: 100vh;
-      padding: 24px;
       position: relative;
       z-index: 1;
+      min-height: 100vh;
+      padding: 24px;
     }
 
     header {
@@ -139,21 +146,21 @@
     }
 
     header p {
-      margin-top: 8px;
+      margin: 8px 0 0;
       color: var(--text-sub);
       font-size: 15px;
     }
 
     .theme-badge {
       display: inline-block;
-      margin-top: 10px;
+      margin-top: 12px;
       padding: 8px 14px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.12);
+      background: rgba(37, 99, 235, 0.16);
       color: var(--text-main);
-      font-size: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
       font-weight: bold;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 14px;
     }
 
     .dashboard {
@@ -165,9 +172,7 @@
     }
 
     .classroom-card,
-    .info-panel,
-    .air-panel,
-    .history-panel {
+    .panel {
       background: var(--card-bg);
       color: var(--text-main);
       border-radius: 18px;
@@ -179,88 +184,41 @@
       padding: 20px;
     }
 
-    svg {
-      width: 470px;
-      height: 630px;
-      max-width: 100%;
-      background: #ffffff;
-      display: block;
-      margin: 0 auto;
-      border-radius: 10px;
-    }
-
-    .side-column {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .info-panel,
-    .air-panel,
-    .history-panel {
+    .panel {
       padding: 20px;
+      margin-bottom: 16px;
     }
 
-    .info-panel h2,
-    .air-panel h2,
-    .history-panel h2 {
-      margin-top: 0;
-      margin-bottom: 14px;
+    .panel h2 {
+      margin: 0 0 14px;
       font-size: 22px;
     }
 
-    .info-box {
-      background: rgba(248, 250, 252, 0.86);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      color: #1f2937;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-
-    body.night-theme .info-box {
-      background: rgba(30, 41, 59, 0.9);
-      border-color: rgba(71, 85, 105, 0.9);
-      color: #f8fafc;
-    }
-
-    .info-label {
+    svg {
+      width: 470px;
+      max-width: 100%;
+      height: auto;
       display: block;
-      font-size: 13px;
-      color: #777;
-      margin-bottom: 6px;
-    }
-
-    body.night-theme .info-label {
-      color: #cbd5e1;
-    }
-
-    .info-box strong {
-      font-size: 17px;
-    }
-
-    .info-box p {
-      margin: 0;
-      line-height: 1.5;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
     }
 
     .button-row {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 12px;
-      flex-wrap: wrap;
     }
 
     button {
       border: none;
       border-radius: 10px;
       padding: 10px 12px;
-      font-size: 14px;
-      cursor: pointer;
       font-weight: bold;
+      cursor: pointer;
+      color: white;
       background: #2563eb;
-      color: #fff;
-      transition: 0.2s;
     }
 
     button:hover {
@@ -275,6 +233,32 @@
       background: #dc2626;
     }
 
+    .info-box {
+      background: rgba(248, 250, 252, 0.88);
+      color: #1f2937;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    body.night-theme .info-box {
+      background: rgba(30, 41, 59, 0.9);
+      color: #f8fafc;
+      border-color: rgba(71, 85, 105, 0.9);
+    }
+
+    .info-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    body.night-theme .info-label {
+      color: #cbd5e1;
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -285,17 +269,12 @@
     .summary-card {
       border-radius: 14px;
       padding: 14px;
-      color: #fff;
+      color: white;
     }
 
-    .summary-card h3 {
-      margin: 0 0 8px;
-      font-size: 17px;
-    }
-
+    .summary-card h3,
     .summary-card p {
       margin: 4px 0;
-      font-size: 14px;
     }
 
     .point-grid {
@@ -305,13 +284,12 @@
     }
 
     .point-card {
+      background: #f8fafc;
+      color: #1f2937;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
       padding: 10px;
-      background: #f8fafc;
-      color: #1f2937;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     body.night-theme .point-card {
@@ -320,14 +298,8 @@
       border-color: rgba(71, 85, 105, 0.9);
     }
 
-    .point-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-    }
-
     .point-card h4 {
       margin: 0 0 6px;
-      font-size: 15px;
     }
 
     .point-card p {
@@ -335,23 +307,12 @@
       font-size: 13px;
     }
 
-    .measured-time-text {
-      margin-top: 6px;
-      font-size: 12px;
-      color: #475569;
-      line-height: 1.4;
-    }
-
-    body.night-theme .measured-time-text {
-      color: #cbd5e1;
-    }
-
     .grade-badge {
       display: inline-block;
       margin-top: 6px;
       padding: 4px 8px;
-      border-radius: 999px;
       color: white;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: bold;
     }
@@ -373,7 +334,7 @@
     }
 
     .history-table-wrap {
-      max-height: 260px;
+      max-height: 250px;
       overflow-y: auto;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
@@ -392,14 +353,9 @@
 
     th,
     td {
-      border-bottom: 1px solid #e2e8f0;
       padding: 8px;
+      border-bottom: 1px solid #e2e8f0;
       text-align: center;
-    }
-
-    body.night-theme th,
-    body.night-theme td {
-      border-bottom-color: rgba(71, 85, 105, 0.9);
     }
 
     th {
@@ -407,7 +363,6 @@
       top: 0;
       background: #f1f5f9;
       color: #1f2937;
-      z-index: 1;
     }
 
     body.night-theme th {
@@ -415,18 +370,18 @@
       color: #f8fafc;
     }
 
-    tr:last-child td {
-      border-bottom: none;
+    body.night-theme td {
+      border-bottom-color: rgba(71, 85, 105, 0.9);
     }
 
     .guide {
       margin-top: 12px;
+      color: var(--text-sub);
       font-size: 13px;
       line-height: 1.6;
-      color: var(--text-sub);
     }
 
-    /* SVG 교실 디자인 */
+    /* 교실 SVG 스타일 */
     .classroom-border {
       fill: none;
       stroke: #000;
@@ -445,17 +400,17 @@
     }
 
     .desk-text {
+      fill: rgba(255, 255, 255, 0.92);
       font-size: 20px;
       font-weight: bold;
-      fill: rgba(255, 255, 255, 0.9);
       text-anchor: middle;
       dominant-baseline: middle;
       pointer-events: none;
     }
 
     .attached-white {
-      fill: #ffffff;
-      stroke: #000000;
+      fill: #fff;
+      stroke: #000;
       stroke-width: 4;
     }
 
@@ -463,7 +418,6 @@
       fill: url(#windowGradient);
       stroke: #008fd3;
       stroke-width: 2;
-      rx: 2;
     }
 
     .window.open {
@@ -476,7 +430,6 @@
       fill: url(#doorWood);
       stroke: #5b3519;
       stroke-width: 2;
-      rx: 2;
     }
 
     .door-line {
@@ -496,25 +449,22 @@
     }
 
     .aircon-text {
-      font-size: 17px;
       fill: #ff1f2d;
+      font-size: 17px;
       font-weight: bold;
       text-anchor: middle;
       dominant-baseline: middle;
       pointer-events: none;
     }
 
-    .clickable {
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .clickable:hover {
-      opacity: 0.75;
-    }
-
+    .clickable,
     .sensor-group {
       cursor: pointer;
+    }
+
+    .clickable:hover,
+    .sensor-group:hover {
+      opacity: 0.75;
     }
 
     .sensor-circle {
@@ -524,7 +474,7 @@
     }
 
     .sensor-text {
-      fill: #ffffff;
+      fill: white;
       font-size: 15px;
       font-weight: bold;
       text-anchor: middle;
@@ -540,17 +490,17 @@
       pointer-events: none;
     }
 
-    .zone-label {
-      font-size: 17px;
-      font-weight: bold;
-      fill: #111827;
-      text-anchor: middle;
-    }
-
     .zone-line {
       stroke: rgba(37, 99, 235, 0.35);
       stroke-width: 3;
       stroke-dasharray: 8 7;
+    }
+
+    .zone-label {
+      fill: #111827;
+      font-size: 17px;
+      font-weight: bold;
+      text-anchor: middle;
     }
 
     @media (max-width: 950px) {
@@ -565,21 +515,16 @@
         margin: 0 auto;
       }
 
-      svg {
-        width: 100%;
-        height: auto;
-      }
-
       .sun,
       .moon {
-        right: 30px;
-        top: 40px;
+        top: 36px;
+        right: 28px;
       }
     }
   </style>
 </head>
 
-<body>
+<body class="day-theme">
   <div class="sky-bg">
     <div class="sun"></div>
     <div class="moon"></div>
@@ -589,7 +534,7 @@
   <div class="app">
     <header>
       <h1>교실 공기질 대시보드</h1>
-      <p>왼쪽 1, 2, 3번 / 오른쪽 4, 5, 6, 7번 지점의 공기질을 시간별로 확인합니다.</p>
+      <p>왼쪽 1, 2, 3번 / 오른쪽 4, 5, 6, 7번 지점의 공기질을 측정합니다.</p>
       <div class="theme-badge" id="themeBadge">현재 시간 확인 중...</div>
     </header>
 
@@ -600,15 +545,11 @@
             <pattern id="woodPattern" patternUnits="userSpaceOnUse" width="90" height="40">
               <rect width="90" height="40" fill="#c98b4a" />
               <path d="M0 8 C20 2, 35 14, 55 8 S80 5, 90 12"
-                    fill="none" stroke="#8b4f22" stroke-width="1.4" opacity="0.65" />
+                fill="none" stroke="#8b4f22" stroke-width="1.4" opacity="0.65" />
               <path d="M0 22 C18 18, 35 28, 54 22 S78 18, 90 25"
-                    fill="none" stroke="#9a5b2c" stroke-width="1.2" opacity="0.6" />
+                fill="none" stroke="#9a5b2c" stroke-width="1.2" opacity="0.6" />
               <path d="M0 34 C25 26, 45 38, 70 31 S84 30, 90 33"
-                    fill="none" stroke="#7a431e" stroke-width="1.1" opacity="0.55" />
-              <path d="M18 0 C12 10, 26 16, 16 28 C12 33, 14 38, 18 40"
-                    fill="none" stroke="#a05c2a" stroke-width="1" opacity="0.5" />
-              <path d="M58 0 C52 9, 66 17, 56 29 C52 34, 54 38, 58 40"
-                    fill="none" stroke="#a05c2a" stroke-width="1" opacity="0.5" />
+                fill="none" stroke="#7a431e" stroke-width="1.1" opacity="0.55" />
             </pattern>
 
             <linearGradient id="doorWood" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -627,7 +568,7 @@
           <!-- 교실 외곽 -->
           <rect class="classroom-border" x="24" y="16" width="428" height="600" />
 
-          <!-- 왼쪽/오른쪽 구역 구분선 -->
+          <!-- 구역선 -->
           <line class="zone-line" x1="236" y1="30" x2="236" y2="602" />
           <text class="zone-label" x="130" y="38">왼쪽 구역</text>
           <text class="zone-label" x="345" y="38">오른쪽 구역</text>
@@ -642,11 +583,9 @@
           <g class="clickable" onclick="toggleWindow('window1', '창문 1')">
             <rect id="window1" class="window" x="445" y="112" width="7" height="94" />
           </g>
-
           <g class="clickable" onclick="toggleWindow('window2', '창문 2')">
             <rect id="window2" class="window" x="448" y="277" width="7" height="79" />
           </g>
-
           <g class="clickable" onclick="toggleWindow('window3', '창문 3')">
             <rect id="window3" class="window" x="448" y="425" width="7" height="91" />
           </g>
@@ -689,7 +628,7 @@
             <text class="desk-text" x="335.5" y="244.5">4</text>
           </g>
 
-          <!-- 왼쪽 아래 책상에 붙어있는 작은 사각형 -->
+          <!-- 붙은 작은 사각형 -->
           <rect class="attached-white" x="43" y="370" width="26" height="50" />
 
           <!-- 책상 5 -->
@@ -722,44 +661,39 @@
             <text class="desk-text" x="328" y="518">7</text>
           </g>
 
-          <!-- 공기질 측정 지점 : 왼쪽 1, 2, 3 -->
+          <!-- 공기질 측정 지점 왼쪽 1,2,3 -->
           <g class="sensor-group" onclick="selectSensor(1)">
             <circle id="sensorCircle1" class="sensor-circle" cx="48" cy="105" r="16" fill="#16a34a" />
             <text class="sensor-text" x="48" y="105">1</text>
             <text class="sensor-label" x="48" y="132">AQ</text>
           </g>
-
           <g class="sensor-group" onclick="selectSensor(2)">
             <circle id="sensorCircle2" class="sensor-circle" cx="48" cy="245" r="16" fill="#16a34a" />
             <text class="sensor-text" x="48" y="245">2</text>
             <text class="sensor-label" x="48" y="272">AQ</text>
           </g>
-
           <g class="sensor-group" onclick="selectSensor(3)">
             <circle id="sensorCircle3" class="sensor-circle" cx="48" cy="495" r="16" fill="#16a34a" />
             <text class="sensor-text" x="48" y="495">3</text>
             <text class="sensor-label" x="48" y="522">AQ</text>
           </g>
 
-          <!-- 공기질 측정 지점 : 오른쪽 4, 5, 6, 7 -->
+          <!-- 공기질 측정 지점 오른쪽 4,5,6,7 -->
           <g class="sensor-group" onclick="selectSensor(4)">
             <circle id="sensorCircle4" class="sensor-circle" cx="425" cy="95" r="16" fill="#16a34a" />
             <text class="sensor-text" x="425" y="95">4</text>
             <text class="sensor-label" x="425" y="122">AQ</text>
           </g>
-
           <g class="sensor-group" onclick="selectSensor(5)">
             <circle id="sensorCircle5" class="sensor-circle" cx="425" cy="255" r="16" fill="#16a34a" />
             <text class="sensor-text" x="425" y="255">5</text>
             <text class="sensor-label" x="425" y="282">AQ</text>
           </g>
-
           <g class="sensor-group" onclick="selectSensor(6)">
             <circle id="sensorCircle6" class="sensor-circle" cx="425" cy="395" r="16" fill="#16a34a" />
             <text class="sensor-text" x="425" y="395">6</text>
             <text class="sensor-label" x="425" y="422">AQ</text>
           </g>
-
           <g class="sensor-group" onclick="selectSensor(7)">
             <circle id="sensorCircle7" class="sensor-circle" cx="425" cy="535" r="16" fill="#16a34a" />
             <text class="sensor-text" x="425" y="535">7</text>
@@ -769,32 +703,35 @@
       </section>
 
       <section class="side-column">
-        <aside class="info-panel">
+        <aside class="panel">
           <h2>선택 정보</h2>
-
           <div class="info-box">
             <span class="info-label">종류</span>
             <strong id="infoType">안내</strong>
           </div>
-
           <div class="info-box">
             <span class="info-label">이름</span>
             <strong id="infoName">교실 공기질 대시보드</strong>
           </div>
-
           <div class="info-box">
             <span class="info-label">상태</span>
-            <p id="infoStatus">공기질 측정 지점 1~7번을 클릭해보세요.</p>
+            <p id="infoStatus">측정하기 버튼을 누르면 공기질이 표시됩니다.</p>
           </div>
         </aside>
 
-        <aside class="air-panel">
+        <aside class="panel">
           <h2>공기질 측정</h2>
 
           <div class="button-row">
             <button onclick="measureAirQuality()">측정하기</button>
             <button id="autoButton" class="secondary-btn" onclick="toggleAutoMeasure()">자동 측정 시작</button>
             <button class="danger-btn" onclick="clearHistory()">기록 삭제</button>
+          </div>
+
+          <div class="button-row">
+            <button class="secondary-btn" onclick="setTheme('day')">낮 배경 테스트</button>
+            <button class="secondary-btn" onclick="setTheme('night')">밤 배경 테스트</button>
+            <button class="secondary-btn" onclick="applyTimeTheme()">현재 시간 배경</button>
           </div>
 
           <div class="info-box">
@@ -808,7 +745,6 @@
               <p id="leftGrade">등급: -</p>
               <p id="leftValue">PM2.5: - / CO₂: -</p>
             </div>
-
             <div id="rightSummary" class="summary-card good">
               <h3>오른쪽 구역</h3>
               <p id="rightGrade">등급: -</p>
@@ -819,14 +755,12 @@
           <div id="pointGrid" class="point-grid"></div>
 
           <p class="guide">
-            측정 버튼을 누르면 현재 시각이 함께 기록됩니다.
-            현재 값은 발표용 가상 데이터입니다.
+            배경이 안 보이면 먼저 '밤 배경 테스트' 버튼을 눌러 확인해보세요.
           </p>
         </aside>
 
-        <aside class="history-panel">
+        <aside class="panel">
           <h2>시간별 측정 기록</h2>
-
           <div class="history-table-wrap">
             <table>
               <thead>
@@ -843,10 +777,6 @@
               </tbody>
             </table>
           </div>
-
-          <p class="guide">
-            새로고침해도 최근 기록은 브라우저에 저장됩니다.
-          </p>
         </aside>
       </section>
     </main>
@@ -864,11 +794,6 @@
       window3: false
     };
 
-    let sensorData = {};
-    let historyData = [];
-    let autoMeasureTimer = null;
-    let lastMeasuredTime = "";
-
     const sensorZones = {
       1: "왼쪽",
       2: "왼쪽",
@@ -879,49 +804,62 @@
       7: "오른쪽"
     };
 
+    let sensorData = {};
+    let historyData = [];
+    let autoMeasureTimer = null;
+
     function createStars() {
       const starsBox = document.getElementById("stars");
       starsBox.innerHTML = "";
 
-      for (let i = 0; i < 70; i++) {
+      for (let i = 0; i < 80; i++) {
         const star = document.createElement("div");
         star.className = "star";
 
-        const x = Math.random() * 100;
-        const y = Math.random() * 75;
         const size = Math.random() * 3 + 1;
-        const delay = Math.random() * 2;
-
-        star.style.left = x + "vw";
-        star.style.top = y + "vh";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.top = Math.random() * 80 + "vh";
         star.style.width = size + "px";
         star.style.height = size + "px";
-        star.style.animationDelay = delay + "s";
+        star.style.animationDelay = Math.random() * 2 + "s";
 
         starsBox.appendChild(star);
+      }
+    }
+
+    function setTheme(mode) {
+      document.body.classList.remove("day-theme", "night-theme");
+
+      if (mode === "night") {
+        document.body.classList.add("night-theme");
+        document.getElementById("themeBadge").textContent = "테스트 모드: 밤 배경, 달과 별 표시";
+      } else {
+        document.body.classList.add("day-theme");
+        document.getElementById("themeBadge").textContent = "테스트 모드: 낮 배경";
       }
     }
 
     function applyTimeTheme() {
       const now = new Date();
       const hour = now.getHours();
-      const body = document.body;
-      const themeBadge = document.getElementById("themeBadge");
       const timeText = getCurrentTimeText();
 
+      document.body.classList.remove("day-theme", "night-theme");
+
       if (hour >= 6 && hour < 18) {
-        body.classList.remove("night-theme");
-        body.classList.add("day-theme");
+        document.body.classList.add("day-theme");
 
         if (hour < 12) {
-          themeBadge.textContent = `현재 시간: ${timeText} · 오전 밝은 배경`;
+          document.getElementById("themeBadge").textContent =
+            `현재 시간: ${timeText} · 오전 밝은 배경`;
         } else {
-          themeBadge.textContent = `현재 시간: ${timeText} · 낮 밝은 배경`;
+          document.getElementById("themeBadge").textContent =
+            `현재 시간: ${timeText} · 낮 밝은 배경`;
         }
       } else {
-        body.classList.remove("day-theme");
-        body.classList.add("night-theme");
-        themeBadge.textContent = `현재 시간: ${timeText} · 밤 배경, 달과 별 표시`;
+        document.body.classList.add("night-theme");
+        document.getElementById("themeBadge").textContent =
+          `현재 시간: ${timeText} · 밤 배경, 달과 별 표시`;
       }
     }
 
@@ -932,45 +870,50 @@
     }
 
     function selectDesk(name) {
-      updateInfo(
-        "책상",
-        name,
-        "4등분된 나무 디자인 책상입니다. 공기질 측정은 AQ 원형 마커에서 확인합니다."
-      );
+      updateInfo("책상", name, "4등분된 나무 디자인 책상입니다.");
     }
 
     function selectDoor() {
-      updateInfo(
-        "문",
-        "교실 출입문",
-        "기존 회색선 위치와 크기에 맞춘 나무 문 디자인입니다."
-      );
+      updateInfo("문", "교실 출입문", "나무 문 디자인으로 표시했습니다.");
     }
 
     function toggleAircon(id, name) {
       airconState[id] = !airconState[id];
-      const airconElement = document.getElementById(id);
+      const element = document.getElementById(id);
 
       if (airconState[id]) {
-        airconElement.classList.add("on");
+        element.classList.add("on");
         updateInfo("에어컨", name, "현재 ON 상태입니다.");
       } else {
-        airconElement.classList.remove("on");
+        element.classList.remove("on");
         updateInfo("에어컨", name, "현재 OFF 상태입니다.");
       }
     }
 
     function toggleWindow(id, name) {
       windowState[id] = !windowState[id];
-      const windowElement = document.getElementById(id);
+      const element = document.getElementById(id);
 
       if (windowState[id]) {
-        windowElement.classList.add("open");
+        element.classList.add("open");
         updateInfo("창문", name, "현재 열림 상태입니다.");
       } else {
-        windowElement.classList.remove("open");
+        element.classList.remove("open");
         updateInfo("창문", name, "현재 닫힘 상태입니다.");
       }
+    }
+
+    function getCurrentTimeText() {
+      const now = new Date();
+
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const date = String(now.getDate()).padStart(2, "0");
+      const hour = String(now.getHours()).padStart(2, "0");
+      const minute = String(now.getMinutes()).padStart(2, "0");
+      const second = String(now.getSeconds()).padStart(2, "0");
+
+      return `${year}-${month}-${date} ${hour}:${minute}:${second}`;
     }
 
     function getRandomNumber(min, max) {
@@ -1009,19 +952,6 @@
       };
     }
 
-    function getCurrentTimeText() {
-      const now = new Date();
-
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const date = String(now.getDate()).padStart(2, "0");
-      const hour = String(now.getHours()).padStart(2, "0");
-      const minute = String(now.getMinutes()).padStart(2, "0");
-      const second = String(now.getSeconds()).padStart(2, "0");
-
-      return `${year}-${month}-${date} ${hour}:${minute}:${second}`;
-    }
-
     function generateSensorData(measuredTime) {
       const data = {};
 
@@ -1043,9 +973,9 @@
 
         data[i] = {
           id: i,
-          zone,
-          pm25,
-          co2,
+          zone: zone,
+          pm25: pm25,
+          co2: co2,
           gradeText: grade.text,
           gradeClass: grade.className,
           color: grade.color,
@@ -1064,8 +994,7 @@
           pm25: 0,
           co2: 0,
           gradeText: "-",
-          gradeClass: "good",
-          color: "#16a34a"
+          gradeClass: "good"
         };
       }
 
@@ -1083,14 +1012,12 @@
         pm25: pm25Average,
         co2: co2Average,
         gradeText: grade.text,
-        gradeClass: grade.className,
-        color: grade.color
+        gradeClass: grade.className
       };
     }
 
     function measureAirQuality() {
       const measuredTime = getCurrentTimeText();
-      lastMeasuredTime = measuredTime;
 
       sensorData = generateSensorData(measuredTime);
 
@@ -1125,7 +1052,7 @@
       updateInfo(
         "공기질",
         "전체 교실 측정 완료",
-        `${measuredTime}에 측정했습니다. 왼쪽 구역은 ${leftAverage.gradeText}, 오른쪽 구역은 ${rightAverage.gradeText}입니다.`
+        `${measuredTime}에 측정했습니다. 왼쪽은 ${leftAverage.gradeText}, 오른쪽은 ${rightAverage.gradeText}입니다.`
       );
     }
 
@@ -1157,10 +1084,7 @@
           <p>PM2.5: ${item.pm25}㎍/㎥</p>
           <p>CO₂: ${item.co2}ppm</p>
           <span class="grade-badge ${item.gradeClass}">${item.gradeText}</span>
-          <div class="measured-time-text">
-            측정 시각<br>
-            ${item.measuredTime}
-          </div>
+          <p>측정 시각<br>${item.measuredTime}</p>
         `;
 
         pointGrid.appendChild(card);
@@ -1185,7 +1109,7 @@
         updateInfo(
           "공기질 측정 지점",
           `${id}번 지점`,
-          "아직 측정값이 없습니다. 먼저 '측정하기' 버튼을 눌러주세요."
+          "아직 측정값이 없습니다. 먼저 측정하기 버튼을 눌러주세요."
         );
         return;
       }
@@ -1193,7 +1117,7 @@
       updateInfo(
         "공기질 측정 지점",
         `${id}번 지점 (${item.zone} 구역)`,
-        `${item.measuredTime}에 측정된 값입니다. PM2.5는 ${item.pm25}㎍/㎥, CO₂는 ${item.co2}ppm이며, 등급은 '${item.gradeText}'입니다.`
+        `${item.measuredTime}에 측정된 값입니다. PM2.5는 ${item.pm25}㎍/㎥, CO₂는 ${item.co2}ppm, 등급은 ${item.gradeText}입니다.`
       );
     }
 
@@ -1250,11 +1174,7 @@
       localStorage.removeItem("airQualityHistory");
       renderHistory();
 
-      updateInfo(
-        "기록",
-        "측정 기록 삭제",
-        "저장된 시간별 공기질 측정 기록을 삭제했습니다."
-      );
+      updateInfo("기록", "측정 기록 삭제", "저장된 시간별 공기질 측정 기록을 삭제했습니다.");
     }
 
     function toggleAutoMeasure() {
@@ -1263,18 +1183,14 @@
       if (autoMeasureTimer === null) {
         measureAirQuality();
 
-        autoMeasureTimer = setInterval(() => {
+        autoMeasureTimer = setInterval(function () {
           measureAirQuality();
         }, 10000);
 
         button.textContent = "자동 측정 중지";
         button.className = "danger-btn";
 
-        updateInfo(
-          "자동 측정",
-          "자동 측정 시작",
-          "10초마다 공기질을 자동으로 측정하고 측정 시각도 함께 기록합니다."
-        );
+        updateInfo("자동 측정", "자동 측정 시작", "10초마다 공기질을 자동 측정합니다.");
       } else {
         clearInterval(autoMeasureTimer);
         autoMeasureTimer = null;
@@ -1282,15 +1198,11 @@
         button.textContent = "자동 측정 시작";
         button.className = "secondary-btn";
 
-        updateInfo(
-          "자동 측정",
-          "자동 측정 중지",
-          "자동 측정을 중지했습니다."
-        );
+        updateInfo("자동 측정", "자동 측정 중지", "자동 측정을 중지했습니다.");
       }
     }
 
-    window.onload = function () {
+    window.addEventListener("load", function () {
       createStars();
       applyTimeTheme();
       loadHistory();
@@ -1300,9 +1212,9 @@
       updateInfo(
         "안내",
         "교실 공기질 대시보드",
-        "측정하기 버튼을 누르면 측정 시각과 함께 왼쪽 1, 2, 3번 / 오른쪽 4, 5, 6, 7번 지점의 공기질이 표시됩니다."
+        "측정하기 버튼을 누르면 공기질과 측정 시각이 표시됩니다."
       );
-    };
+    });
   </script>
 </body>
 </html>
