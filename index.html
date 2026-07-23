@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>교실 공기질 대시보드</title>
+
+  <title>교실 공기질 기록 대시보드</title>
 
   <style>
     * {
@@ -11,7 +12,7 @@
     }
 
     :root {
-      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-bg: rgba(255, 255, 255, 0.93);
       --text-main: #1f2937;
       --text-sub: #64748b;
       --shadow: rgba(0, 0, 0, 0.14);
@@ -26,18 +27,16 @@
       transition: background 0.8s ease, color 0.8s ease;
     }
 
-    /* 낮 배경 */
     body.day-theme {
       background:
         radial-gradient(circle at 85% 12%, rgba(250, 204, 21, 0.55) 0, transparent 120px),
         linear-gradient(135deg, #bfdbfe 0%, #eff6ff 45%, #fff7ed 100%);
-      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-bg: rgba(255, 255, 255, 0.93);
       --text-main: #1f2937;
       --text-sub: #64748b;
       --shadow: rgba(0, 0, 0, 0.14);
     }
 
-    /* 밤 배경 */
     body.night-theme {
       background:
         radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.28) 0, transparent 95px),
@@ -122,6 +121,7 @@
         opacity: 0.25;
         transform: scale(0.8);
       }
+
       to {
         opacity: 1;
         transform: scale(1.4);
@@ -165,7 +165,7 @@
 
     .dashboard {
       display: grid;
-      grid-template-columns: 520px 390px;
+      grid-template-columns: 520px 420px;
       justify-content: center;
       align-items: start;
       gap: 24px;
@@ -194,6 +194,11 @@
       font-size: 22px;
     }
 
+    .panel h3 {
+      margin: 18px 0 10px;
+      font-size: 18px;
+    }
+
     svg {
       width: 470px;
       max-width: 100%;
@@ -219,6 +224,7 @@
       cursor: pointer;
       color: white;
       background: #2563eb;
+      transition: opacity 0.2s;
     }
 
     button:hover {
@@ -233,8 +239,16 @@
       background: #dc2626;
     }
 
+    .green-btn {
+      background: #16a34a;
+    }
+
+    .orange-btn {
+      background: #f97316;
+    }
+
     .info-box {
-      background: rgba(248, 250, 252, 0.88);
+      background: rgba(248, 250, 252, 0.9);
       color: #1f2937;
       border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: 12px;
@@ -259,6 +273,47 @@
       color: #cbd5e1;
     }
 
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -277,46 +332,6 @@
       margin: 4px 0;
     }
 
-    .point-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .point-card {
-      background: #f8fafc;
-      color: #1f2937;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    body.night-theme .point-card {
-      background: rgba(30, 41, 59, 0.9);
-      color: #f8fafc;
-      border-color: rgba(71, 85, 105, 0.9);
-    }
-
-    .point-card h4 {
-      margin: 0 0 6px;
-    }
-
-    .point-card p {
-      margin: 3px 0;
-      font-size: 13px;
-    }
-
-    .grade-badge {
-      display: inline-block;
-      margin-top: 6px;
-      padding: 4px 8px;
-      color: white;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
     .good {
       background: #16a34a;
     }
@@ -333,11 +348,40 @@
       background: #dc2626;
     }
 
+    .average-box {
+      background: rgba(241, 245, 249, 0.9);
+      color: #1f2937;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      margin-top: 12px;
+    }
+
+    body.night-theme .average-box {
+      background: rgba(30, 41, 59, 0.9);
+      color: #f8fafc;
+      border-color: rgba(71, 85, 105, 0.9);
+    }
+
+    .comparison-result {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      line-height: 1.6;
+    }
+
     .history-table-wrap {
-      max-height: 250px;
+      max-height: 280px;
       overflow-y: auto;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
+      display: none;
+    }
+
+    .history-table-wrap.show {
+      display: block;
     }
 
     body.night-theme .history-table-wrap {
@@ -356,6 +400,7 @@
       padding: 8px;
       border-bottom: 1px solid #e2e8f0;
       text-align: center;
+      vertical-align: middle;
     }
 
     th {
@@ -363,6 +408,7 @@
       top: 0;
       background: #f1f5f9;
       color: #1f2937;
+      z-index: 1;
     }
 
     body.night-theme th {
@@ -381,7 +427,21 @@
       line-height: 1.6;
     }
 
-    /* 교실 SVG 스타일 */
+    .student-seat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .student-list {
+      margin-top: 10px;
+      padding-left: 18px;
+      line-height: 1.7;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    /* SVG 교실 디자인 */
     .classroom-border {
       fill: none;
       stroke: #000;
@@ -394,13 +454,19 @@
       stroke-width: 4;
     }
 
+    .desk.selected {
+      stroke: #2563eb;
+      stroke-width: 6;
+      filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.8));
+    }
+
     .desk-line {
       stroke: rgba(80, 45, 20, 0.85);
       stroke-width: 2;
     }
 
     .desk-text {
-      fill: rgba(255, 255, 255, 0.92);
+      fill: rgba(255, 255, 255, 0.95);
       font-size: 20px;
       font-weight: bold;
       text-anchor: middle;
@@ -457,37 +523,12 @@
       pointer-events: none;
     }
 
-    .clickable,
-    .sensor-group {
+    .clickable {
       cursor: pointer;
     }
 
-    .clickable:hover,
-    .sensor-group:hover {
-      opacity: 0.75;
-    }
-
-    .sensor-circle {
-      stroke: #111827;
-      stroke-width: 3;
-      filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.25));
-    }
-
-    .sensor-text {
-      fill: white;
-      font-size: 15px;
-      font-weight: bold;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      pointer-events: none;
-    }
-
-    .sensor-label {
-      fill: #111827;
-      font-size: 11px;
-      font-weight: bold;
-      text-anchor: middle;
-      pointer-events: none;
+    .clickable:hover {
+      opacity: 0.78;
     }
 
     .zone-line {
@@ -503,7 +544,15 @@
       text-anchor: middle;
     }
 
-    @media (max-width: 950px) {
+    .zone-left-bg {
+      fill: rgba(37, 99, 235, 0.06);
+    }
+
+    .zone-right-bg {
+      fill: rgba(249, 115, 22, 0.06);
+    }
+
+    @media (max-width: 980px) {
       .dashboard {
         grid-template-columns: 1fr;
       }
@@ -511,7 +560,7 @@
       .classroom-card,
       .side-column {
         width: 100%;
-        max-width: 520px;
+        max-width: 540px;
         margin: 0 auto;
       }
 
@@ -533,8 +582,8 @@
 
   <div class="app">
     <header>
-      <h1>교실 공기질 대시보드</h1>
-      <p>왼쪽 1, 2, 3번 / 오른쪽 4, 5, 6, 7번 지점의 공기질을 측정합니다.</p>
+      <h1>교실 공기질 기록 대시보드</h1>
+      <p>교실을 왼쪽/오른쪽 구역으로 나누어 공기질 측정 기록과 평균을 비교합니다.</p>
       <div class="theme-badge" id="themeBadge">현재 시간 확인 중...</div>
     </header>
 
@@ -568,6 +617,10 @@
           <!-- 교실 외곽 -->
           <rect class="classroom-border" x="24" y="16" width="428" height="600" />
 
+          <!-- 왼쪽/오른쪽 구역 배경 -->
+          <rect class="zone-left-bg" x="26" y="18" width="210" height="596" />
+          <rect class="zone-right-bg" x="236" y="18" width="214" height="596" />
+
           <!-- 구역선 -->
           <line class="zone-line" x1="236" y1="30" x2="236" y2="602" />
           <text class="zone-label" x="130" y="38">왼쪽 구역</text>
@@ -591,16 +644,16 @@
           </g>
 
           <!-- 책상 1 -->
-          <g class="clickable" onclick="selectDesk('책상 1')">
-            <rect class="desk" x="70" y="53" width="145" height="97" />
+          <g class="clickable" onclick="selectDesk(1)">
+            <rect id="deskRect1" class="desk" x="70" y="53" width="145" height="97" />
             <line class="desk-line" x1="142.5" y1="53" x2="142.5" y2="150" />
             <line class="desk-line" x1="70" y1="101.5" x2="215" y2="101.5" />
             <text class="desk-text" x="142.5" y="101.5">1</text>
           </g>
 
           <!-- 책상 2 -->
-          <g class="clickable" onclick="selectDesk('책상 2')">
-            <rect class="desk" x="258" y="51" width="152" height="96" />
+          <g class="clickable" onclick="selectDesk(2)">
+            <rect id="deskRect2" class="desk" x="258" y="51" width="152" height="96" />
             <line class="desk-line" x1="334" y1="51" x2="334" y2="147" />
             <line class="desk-line" x1="258" y1="99" x2="410" y2="99" />
             <text class="desk-text" x="334" y="99">2</text>
@@ -613,16 +666,16 @@
           </g>
 
           <!-- 책상 3 -->
-          <g class="clickable" onclick="selectDesk('책상 3')">
-            <rect class="desk" x="65" y="193" width="153" height="101" />
+          <g class="clickable" onclick="selectDesk(3)">
+            <rect id="deskRect3" class="desk" x="65" y="193" width="153" height="101" />
             <line class="desk-line" x1="141.5" y1="193" x2="141.5" y2="294" />
             <line class="desk-line" x1="65" y1="243.5" x2="218" y2="243.5" />
             <text class="desk-text" x="141.5" y="243.5">3</text>
           </g>
 
           <!-- 책상 4 -->
-          <g class="clickable" onclick="selectDesk('책상 4')">
-            <rect class="desk" x="259" y="197" width="153" height="95" />
+          <g class="clickable" onclick="selectDesk(4)">
+            <rect id="deskRect4" class="desk" x="259" y="197" width="153" height="95" />
             <line class="desk-line" x1="335.5" y1="197" x2="335.5" y2="292" />
             <line class="desk-line" x1="259" y1="244.5" x2="412" y2="244.5" />
             <text class="desk-text" x="335.5" y="244.5">4</text>
@@ -632,16 +685,16 @@
           <rect class="attached-white" x="43" y="370" width="26" height="50" />
 
           <!-- 책상 5 -->
-          <g class="clickable" onclick="selectDesk('책상 5')">
-            <rect class="desk" x="68" y="340" width="145" height="100" />
+          <g class="clickable" onclick="selectDesk(5)">
+            <rect id="deskRect5" class="desk" x="68" y="340" width="145" height="100" />
             <line class="desk-line" x1="140.5" y1="340" x2="140.5" y2="440" />
             <line class="desk-line" x1="68" y1="390" x2="213" y2="390" />
             <text class="desk-text" x="140.5" y="390">5</text>
           </g>
 
           <!-- 책상 6 -->
-          <g class="clickable" onclick="selectDesk('책상 6')">
-            <rect class="desk" x="254" y="343" width="153" height="96" />
+          <g class="clickable" onclick="selectDesk(6)">
+            <rect id="deskRect6" class="desk" x="254" y="343" width="153" height="96" />
             <line class="desk-line" x1="330.5" y1="343" x2="330.5" y2="439" />
             <line class="desk-line" x1="254" y1="391" x2="407" y2="391" />
             <text class="desk-text" x="330.5" y="391">6</text>
@@ -654,50 +707,11 @@
           </g>
 
           <!-- 책상 7 -->
-          <g class="clickable" onclick="selectDesk('책상 7')">
-            <rect class="desk" x="252" y="470" width="152" height="96" />
+          <g class="clickable" onclick="selectDesk(7)">
+            <rect id="deskRect7" class="desk" x="252" y="470" width="152" height="96" />
             <line class="desk-line" x1="328" y1="470" x2="328" y2="566" />
             <line class="desk-line" x1="252" y1="518" x2="404" y2="518" />
             <text class="desk-text" x="328" y="518">7</text>
-          </g>
-
-          <!-- 공기질 측정 지점 왼쪽 1,2,3 -->
-          <g class="sensor-group" onclick="selectSensor(1)">
-            <circle id="sensorCircle1" class="sensor-circle" cx="48" cy="105" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="48" y="105">1</text>
-            <text class="sensor-label" x="48" y="132">AQ</text>
-          </g>
-          <g class="sensor-group" onclick="selectSensor(2)">
-            <circle id="sensorCircle2" class="sensor-circle" cx="48" cy="245" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="48" y="245">2</text>
-            <text class="sensor-label" x="48" y="272">AQ</text>
-          </g>
-          <g class="sensor-group" onclick="selectSensor(3)">
-            <circle id="sensorCircle3" class="sensor-circle" cx="48" cy="495" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="48" y="495">3</text>
-            <text class="sensor-label" x="48" y="522">AQ</text>
-          </g>
-
-          <!-- 공기질 측정 지점 오른쪽 4,5,6,7 -->
-          <g class="sensor-group" onclick="selectSensor(4)">
-            <circle id="sensorCircle4" class="sensor-circle" cx="425" cy="95" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="425" y="95">4</text>
-            <text class="sensor-label" x="425" y="122">AQ</text>
-          </g>
-          <g class="sensor-group" onclick="selectSensor(5)">
-            <circle id="sensorCircle5" class="sensor-circle" cx="425" cy="255" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="425" y="255">5</text>
-            <text class="sensor-label" x="425" y="282">AQ</text>
-          </g>
-          <g class="sensor-group" onclick="selectSensor(6)">
-            <circle id="sensorCircle6" class="sensor-circle" cx="425" cy="395" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="425" y="395">6</text>
-            <text class="sensor-label" x="425" y="422">AQ</text>
-          </g>
-          <g class="sensor-group" onclick="selectSensor(7)">
-            <circle id="sensorCircle7" class="sensor-circle" cx="425" cy="535" r="16" fill="#16a34a" />
-            <text class="sensor-text" x="425" y="535">7</text>
-            <text class="sensor-label" x="425" y="562">AQ</text>
           </g>
         </svg>
       </section>
@@ -705,39 +719,116 @@
       <section class="side-column">
         <aside class="panel">
           <h2>선택 정보</h2>
+
           <div class="info-box">
             <span class="info-label">종류</span>
             <strong id="infoType">안내</strong>
           </div>
+
           <div class="info-box">
             <span class="info-label">이름</span>
-            <strong id="infoName">교실 공기질 대시보드</strong>
+            <strong id="infoName">교실 공기질 기록 대시보드</strong>
           </div>
+
           <div class="info-box">
             <span class="info-label">상태</span>
-            <p id="infoStatus">측정하기 버튼을 누르면 공기질이 표시됩니다.</p>
+            <p id="infoStatus">책상을 클릭하면 학생 이름을 입력할 수 있습니다.</p>
           </div>
         </aside>
 
         <aside class="panel">
-          <h2>공기질 측정</h2>
+          <h2>학생 자리 이름 기록</h2>
 
-          <div class="button-row">
-            <button onclick="measureAirQuality()">측정하기</button>
-            <button id="autoButton" class="secondary-btn" onclick="toggleAutoMeasure()">자동 측정 시작</button>
-            <button class="danger-btn" onclick="clearHistory()">기록 삭제</button>
+          <div class="info-box">
+            <span class="info-label">선택한 책상</span>
+            <strong id="selectedDeskTitle">아직 선택하지 않음</strong>
+          </div>
+
+          <div class="student-seat-grid">
+            <div>
+              <label for="seatName1">1번 자리</label>
+              <input id="seatName1" type="text" placeholder="학생 이름" disabled />
+            </div>
+
+            <div>
+              <label for="seatName2">2번 자리</label>
+              <input id="seatName2" type="text" placeholder="학생 이름" disabled />
+            </div>
+
+            <div>
+              <label for="seatName3">3번 자리</label>
+              <input id="seatName3" type="text" placeholder="학생 이름" disabled />
+            </div>
+
+            <div>
+              <label for="seatName4">4번 자리</label>
+              <input id="seatName4" type="text" placeholder="학생 이름" disabled />
+            </div>
+          </div>
+
+          <div class="button-row" style="margin-top: 12px;">
+            <button class="green-btn" onclick="saveStudentNames()">학생 이름 저장</button>
+            <button class="secondary-btn" onclick="clearSelectedDeskNames()">선택 책상 이름 지우기</button>
+          </div>
+
+          <ul id="studentList" class="student-list">
+            <li>책상을 선택하면 저장된 학생 이름이 표시됩니다.</li>
+          </ul>
+
+          <p class="guide">
+            이름은 브라우저에 저장됩니다. 같은 기기와 같은 브라우저에서 다시 열면 유지됩니다.
+          </p>
+        </aside>
+
+        <aside class="panel">
+          <h2>공기질 기록 입력</h2>
+
+          <div class="input-grid">
+            <div>
+              <label for="leftPm25">왼쪽 PM2.5</label>
+              <input id="leftPm25" type="number" placeholder="예: 18" />
+            </div>
+
+            <div>
+              <label for="leftCo2">왼쪽 CO₂</label>
+              <input id="leftCo2" type="number" placeholder="예: 780" />
+            </div>
+
+            <div>
+              <label for="rightPm25">오른쪽 PM2.5</label>
+              <input id="rightPm25" type="number" placeholder="예: 25" />
+            </div>
+
+            <div>
+              <label for="rightCo2">오른쪽 CO₂</label>
+              <input id="rightCo2" type="number" placeholder="예: 950" />
+            </div>
+
+            <div class="input-full">
+              <label for="recordMemo">메모</label>
+              <textarea id="recordMemo" placeholder="예: 쉬는 시간 직후 측정, 창문 열림 등"></textarea>
+            </div>
           </div>
 
           <div class="button-row">
-            <button class="secondary-btn" onclick="setTheme('day')">낮 배경 테스트</button>
-            <button class="secondary-btn" onclick="setTheme('night')">밤 배경 테스트</button>
-            <button class="secondary-btn" onclick="applyTimeTheme()">현재 시간 배경</button>
+            <button class="green-btn" onclick="saveAirRecord()">측정 기록 저장하기</button>
+            <button onclick="toggleHistory()">측정한 기록 확인하기</button>
+            <button class="orange-btn" onclick="showAverageRecord()">평균 측정기록 보기</button>
+            <button class="danger-btn" onclick="clearAirRecords()">기록 삭제</button>
           </div>
 
           <div class="info-box">
-            <span class="info-label">마지막 측정 시간</span>
-            <strong id="lastMeasuredTime">아직 측정 전</strong>
+            <span class="info-label">마지막 기록 시간</span>
+            <strong id="lastRecordTime">아직 기록 없음</strong>
           </div>
+
+          <p class="guide">
+            실제 측정기로 왼쪽/오른쪽 구역을 측정한 뒤, 그 값을 입력해서 기록하는 방식입니다.
+          </p>
+        </aside>
+
+        <aside class="panel">
+          <h2>최근 기록 요약</h2>
 
           <div class="summary-grid">
             <div id="leftSummary" class="summary-card good">
@@ -745,6 +836,7 @@
               <p id="leftGrade">등급: -</p>
               <p id="leftValue">PM2.5: - / CO₂: -</p>
             </div>
+
             <div id="rightSummary" class="summary-card good">
               <h3>오른쪽 구역</h3>
               <p id="rightGrade">등급: -</p>
@@ -752,30 +844,44 @@
             </div>
           </div>
 
-          <div id="pointGrid" class="point-grid"></div>
-
-          <p class="guide">
-            배경이 안 보이면 먼저 '밤 배경 테스트' 버튼을 눌러 확인해보세요.
-          </p>
+          <div id="averageBox" class="average-box">
+            평균 측정기록 보기를 누르면 왼쪽/오른쪽 평균과 비교 결과가 표시됩니다.
+          </div>
         </aside>
 
         <aside class="panel">
-          <h2>시간별 측정 기록</h2>
-          <div class="history-table-wrap">
+          <h2>측정한 기록</h2>
+
+          <div id="historyWrap" class="history-table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>측정 시각</th>
-                  <th>왼쪽 평균</th>
-                  <th>오른쪽 평균</th>
+                  <th>기록 시각</th>
+                  <th>왼쪽</th>
+                  <th>오른쪽</th>
+                  <th>비교</th>
                 </tr>
               </thead>
               <tbody id="historyTableBody">
                 <tr>
-                  <td colspan="3">아직 기록이 없습니다.</td>
+                  <td colspan="4">아직 기록이 없습니다.</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <p class="guide">
+            기록 확인 버튼을 누르면 저장된 공기질 기록을 볼 수 있습니다.
+          </p>
+        </aside>
+
+        <aside class="panel">
+          <h2>배경 테스트</h2>
+
+          <div class="button-row">
+            <button class="secondary-btn" onclick="setTheme('day')">낮 배경 테스트</button>
+            <button class="secondary-btn" onclick="setTheme('night')">밤 배경 테스트</button>
+            <button class="secondary-btn" onclick="applyTimeTheme()">현재 시간 배경</button>
           </div>
         </aside>
       </section>
@@ -794,19 +900,9 @@
       window3: false
     };
 
-    const sensorZones = {
-      1: "왼쪽",
-      2: "왼쪽",
-      3: "왼쪽",
-      4: "오른쪽",
-      5: "오른쪽",
-      6: "오른쪽",
-      7: "오른쪽"
-    };
-
-    let sensorData = {};
-    let historyData = [];
-    let autoMeasureTimer = null;
+    let selectedDesk = null;
+    let studentNames = {};
+    let airRecords = [];
 
     function createStars() {
       const starsBox = document.getElementById("stars");
@@ -863,46 +959,6 @@
       }
     }
 
-    function updateInfo(type, name, status) {
-      document.getElementById("infoType").textContent = type;
-      document.getElementById("infoName").textContent = name;
-      document.getElementById("infoStatus").textContent = status;
-    }
-
-    function selectDesk(name) {
-      updateInfo("책상", name, "4등분된 나무 디자인 책상입니다.");
-    }
-
-    function selectDoor() {
-      updateInfo("문", "교실 출입문", "나무 문 디자인으로 표시했습니다.");
-    }
-
-    function toggleAircon(id, name) {
-      airconState[id] = !airconState[id];
-      const element = document.getElementById(id);
-
-      if (airconState[id]) {
-        element.classList.add("on");
-        updateInfo("에어컨", name, "현재 ON 상태입니다.");
-      } else {
-        element.classList.remove("on");
-        updateInfo("에어컨", name, "현재 OFF 상태입니다.");
-      }
-    }
-
-    function toggleWindow(id, name) {
-      windowState[id] = !windowState[id];
-      const element = document.getElementById(id);
-
-      if (windowState[id]) {
-        element.classList.add("open");
-        updateInfo("창문", name, "현재 열림 상태입니다.");
-      } else {
-        element.classList.remove("open");
-        updateInfo("창문", name, "현재 닫힘 상태입니다.");
-      }
-    }
-
     function getCurrentTimeText() {
       const now = new Date();
 
@@ -916,8 +972,163 @@
       return `${year}-${month}-${date} ${hour}:${minute}:${second}`;
     }
 
-    function getRandomNumber(min, max) {
-      return Math.round(Math.random() * (max - min) + min);
+    function updateInfo(type, name, status) {
+      document.getElementById("infoType").textContent = type;
+      document.getElementById("infoName").textContent = name;
+      document.getElementById("infoStatus").textContent = status;
+    }
+
+    function selectDoor() {
+      clearDeskSelectionVisual();
+
+      updateInfo(
+        "문",
+        "교실 출입문",
+        "나무 문 디자인으로 표시했습니다."
+      );
+    }
+
+    function toggleAircon(id, name) {
+      airconState[id] = !airconState[id];
+      const element = document.getElementById(id);
+
+      if (airconState[id]) {
+        element.classList.add("on");
+        updateInfo("에어컨", name, "현재 ON 상태로 표시했습니다.");
+      } else {
+        element.classList.remove("on");
+        updateInfo("에어컨", name, "현재 OFF 상태로 표시했습니다.");
+      }
+    }
+
+    function toggleWindow(id, name) {
+      windowState[id] = !windowState[id];
+      const element = document.getElementById(id);
+
+      if (windowState[id]) {
+        element.classList.add("open");
+        updateInfo("창문", name, "현재 열림 상태로 표시했습니다.");
+      } else {
+        element.classList.remove("open");
+        updateInfo("창문", name, "현재 닫힘 상태로 표시했습니다.");
+      }
+    }
+
+    function selectDesk(deskNumber) {
+      selectedDesk = deskNumber;
+      clearDeskSelectionVisual();
+
+      const selectedRect = document.getElementById(`deskRect${deskNumber}`);
+      if (selectedRect) {
+        selectedRect.classList.add("selected");
+      }
+
+      document.getElementById("selectedDeskTitle").textContent = `책상 ${deskNumber}`;
+
+      enableSeatInputs(true);
+      loadSelectedDeskNamesToInputs();
+      renderSelectedDeskStudentList();
+
+      updateInfo(
+        "책상",
+        `책상 ${deskNumber}`,
+        "이 책상에 앉는 학생 이름을 입력하고 저장할 수 있습니다."
+      );
+    }
+
+    function clearDeskSelectionVisual() {
+      for (let i = 1; i <= 7; i++) {
+        const rect = document.getElementById(`deskRect${i}`);
+        if (rect) {
+          rect.classList.remove("selected");
+        }
+      }
+    }
+
+    function enableSeatInputs(enabled) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`seatName${i}`).disabled = !enabled;
+      }
+    }
+
+    function loadSelectedDeskNamesToInputs() {
+      const names = studentNames[selectedDesk] || ["", "", "", ""];
+
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`seatName${i}`).value = names[i - 1] || "";
+      }
+    }
+
+    function saveStudentNames() {
+      if (selectedDesk === null) {
+        alert("먼저 책상을 선택해주세요.");
+        return;
+      }
+
+      const names = [];
+
+      for (let i = 1; i <= 4; i++) {
+        names.push(document.getElementById(`seatName${i}`).value.trim());
+      }
+
+      studentNames[selectedDesk] = names;
+      localStorage.setItem("studentNames", JSON.stringify(studentNames));
+
+      renderSelectedDeskStudentList();
+
+      updateInfo(
+        "학생 이름 저장",
+        `책상 ${selectedDesk}`,
+        `책상 ${selectedDesk}의 학생 이름을 저장했습니다.`
+      );
+    }
+
+    function clearSelectedDeskNames() {
+      if (selectedDesk === null) {
+        alert("먼저 책상을 선택해주세요.");
+        return;
+      }
+
+      studentNames[selectedDesk] = ["", "", "", ""];
+      localStorage.setItem("studentNames", JSON.stringify(studentNames));
+
+      loadSelectedDeskNamesToInputs();
+      renderSelectedDeskStudentList();
+
+      updateInfo(
+        "학생 이름 삭제",
+        `책상 ${selectedDesk}`,
+        `책상 ${selectedDesk}의 학생 이름을 지웠습니다.`
+      );
+    }
+
+    function renderSelectedDeskStudentList() {
+      const list = document.getElementById("studentList");
+
+      if (selectedDesk === null) {
+        list.innerHTML = "<li>책상을 선택하면 저장된 학생 이름이 표시됩니다.</li>";
+        return;
+      }
+
+      const names = studentNames[selectedDesk] || ["", "", "", ""];
+      let html = "";
+
+      for (let i = 0; i < 4; i++) {
+        const name = names[i] ? names[i] : "비어 있음";
+        html += `<li>${i + 1}번 자리: ${name}</li>`;
+      }
+
+      list.innerHTML = html;
+    }
+
+    function loadStudentNames() {
+      const saved = localStorage.getItem("studentNames");
+
+      if (saved) {
+        studentNames = JSON.parse(saved);
+      } else {
+        studentNames = {};
+      }
     }
 
     function getAirGrade(pm25, co2) {
@@ -925,7 +1136,7 @@
         return {
           text: "좋음",
           className: "good",
-          color: "#16a34a"
+          score: 1
         };
       }
 
@@ -933,7 +1144,7 @@
         return {
           text: "보통",
           className: "normal",
-          color: "#2563eb"
+          score: 2
         };
       }
 
@@ -941,278 +1152,284 @@
         return {
           text: "나쁨",
           className: "bad",
-          color: "#f97316"
+          score: 3
         };
       }
 
       return {
         text: "매우 나쁨",
         className: "very-bad",
-        color: "#dc2626"
+        score: 4
       };
     }
 
-    function generateSensorData(measuredTime) {
-      const data = {};
+    function getComparisonText(leftPm25, leftCo2, rightPm25, rightCo2) {
+      const leftScore = leftPm25 + leftCo2 / 40;
+      const rightScore = rightPm25 + rightCo2 / 40;
 
-      for (let i = 1; i <= 7; i++) {
-        const zone = sensorZones[i];
-
-        let pm25;
-        let co2;
-
-        if (zone === "왼쪽") {
-          pm25 = getRandomNumber(8, 45);
-          co2 = getRandomNumber(500, 1200);
-        } else {
-          pm25 = getRandomNumber(10, 60);
-          co2 = getRandomNumber(550, 1500);
-        }
-
-        const grade = getAirGrade(pm25, co2);
-
-        data[i] = {
-          id: i,
-          zone: zone,
-          pm25: pm25,
-          co2: co2,
-          gradeText: grade.text,
-          gradeClass: grade.className,
-          color: grade.color,
-          measuredTime: measuredTime
-        };
+      if (Math.abs(leftScore - rightScore) < 3) {
+        return "비슷함";
       }
 
-      return data;
-    }
-
-    function calculateZoneAverage(zoneName) {
-      const values = Object.values(sensorData).filter(item => item.zone === zoneName);
-
-      if (values.length === 0) {
-        return {
-          pm25: 0,
-          co2: 0,
-          gradeText: "-",
-          gradeClass: "good"
-        };
+      if (leftScore < rightScore) {
+        return "왼쪽이 더 좋음";
       }
 
-      const pm25Average = Math.round(
-        values.reduce((sum, item) => sum + item.pm25, 0) / values.length
-      );
-
-      const co2Average = Math.round(
-        values.reduce((sum, item) => sum + item.co2, 0) / values.length
-      );
-
-      const grade = getAirGrade(pm25Average, co2Average);
-
-      return {
-        pm25: pm25Average,
-        co2: co2Average,
-        gradeText: grade.text,
-        gradeClass: grade.className
-      };
+      return "오른쪽이 더 좋음";
     }
 
-    function measureAirQuality() {
-      const measuredTime = getCurrentTimeText();
+    function saveAirRecord() {
+      const leftPm25 = Number(document.getElementById("leftPm25").value);
+      const leftCo2 = Number(document.getElementById("leftCo2").value);
+      const rightPm25 = Number(document.getElementById("rightPm25").value);
+      const rightCo2 = Number(document.getElementById("rightCo2").value);
+      const memo = document.getElementById("recordMemo").value.trim();
 
-      sensorData = generateSensorData(measuredTime);
-
-      const leftAverage = calculateZoneAverage("왼쪽");
-      const rightAverage = calculateZoneAverage("오른쪽");
-
-      document.getElementById("lastMeasuredTime").textContent = measuredTime;
-
-      updateSummary("leftSummary", "leftGrade", "leftValue", leftAverage);
-      updateSummary("rightSummary", "rightGrade", "rightValue", rightAverage);
-
-      renderPointCards();
-      updateSensorMarkers();
-
-      historyData.unshift({
-        time: measuredTime,
-        leftGrade: leftAverage.gradeText,
-        leftPm25: leftAverage.pm25,
-        leftCo2: leftAverage.co2,
-        rightGrade: rightAverage.gradeText,
-        rightPm25: rightAverage.pm25,
-        rightCo2: rightAverage.co2
-      });
-
-      if (historyData.length > 30) {
-        historyData = historyData.slice(0, 30);
-      }
-
-      saveHistory();
-      renderHistory();
-
-      updateInfo(
-        "공기질",
-        "전체 교실 측정 완료",
-        `${measuredTime}에 측정했습니다. 왼쪽은 ${leftAverage.gradeText}, 오른쪽은 ${rightAverage.gradeText}입니다.`
-      );
-    }
-
-    function updateSummary(cardId, gradeId, valueId, average) {
-      const card = document.getElementById(cardId);
-      const grade = document.getElementById(gradeId);
-      const value = document.getElementById(valueId);
-
-      card.className = `summary-card ${average.gradeClass}`;
-      grade.textContent = `등급: ${average.gradeText}`;
-      value.textContent = `PM2.5: ${average.pm25}㎍/㎥ / CO₂: ${average.co2}ppm`;
-    }
-
-    function renderPointCards() {
-      const pointGrid = document.getElementById("pointGrid");
-      pointGrid.innerHTML = "";
-
-      for (let i = 1; i <= 7; i++) {
-        const item = sensorData[i];
-
-        const card = document.createElement("div");
-        card.className = "point-card";
-        card.onclick = function () {
-          selectSensor(i);
-        };
-
-        card.innerHTML = `
-          <h4>${i}번 지점 (${item.zone})</h4>
-          <p>PM2.5: ${item.pm25}㎍/㎥</p>
-          <p>CO₂: ${item.co2}ppm</p>
-          <span class="grade-badge ${item.gradeClass}">${item.gradeText}</span>
-          <p>측정 시각<br>${item.measuredTime}</p>
-        `;
-
-        pointGrid.appendChild(card);
-      }
-    }
-
-    function updateSensorMarkers() {
-      for (let i = 1; i <= 7; i++) {
-        const circle = document.getElementById(`sensorCircle${i}`);
-        const item = sensorData[i];
-
-        if (circle && item) {
-          circle.setAttribute("fill", item.color);
-        }
-      }
-    }
-
-    function selectSensor(id) {
-      const item = sensorData[id];
-
-      if (!item) {
-        updateInfo(
-          "공기질 측정 지점",
-          `${id}번 지점`,
-          "아직 측정값이 없습니다. 먼저 측정하기 버튼을 눌러주세요."
-        );
+      if (
+        !leftPm25 || !leftCo2 || !rightPm25 || !rightCo2 ||
+        leftPm25 < 0 || leftCo2 < 0 || rightPm25 < 0 || rightCo2 < 0
+      ) {
+        alert("왼쪽/오른쪽 PM2.5와 CO₂ 값을 모두 올바르게 입력해주세요.");
         return;
       }
 
+      const time = getCurrentTimeText();
+
+      const leftGrade = getAirGrade(leftPm25, leftCo2);
+      const rightGrade = getAirGrade(rightPm25, rightCo2);
+      const comparison = getComparisonText(leftPm25, leftCo2, rightPm25, rightCo2);
+
+      const record = {
+        time,
+        leftPm25,
+        leftCo2,
+        rightPm25,
+        rightCo2,
+        leftGradeText: leftGrade.text,
+        leftGradeClass: leftGrade.className,
+        rightGradeText: rightGrade.text,
+        rightGradeClass: rightGrade.className,
+        comparison,
+        memo
+      };
+
+      airRecords.unshift(record);
+
+      if (airRecords.length > 50) {
+        airRecords = airRecords.slice(0, 50);
+      }
+
+      localStorage.setItem("airRecords", JSON.stringify(airRecords));
+
+      document.getElementById("lastRecordTime").textContent = time;
+
+      updateSummary(record);
+      renderHistory();
+      showAverageRecord();
+
       updateInfo(
-        "공기질 측정 지점",
-        `${id}번 지점 (${item.zone} 구역)`,
-        `${item.measuredTime}에 측정된 값입니다. PM2.5는 ${item.pm25}㎍/㎥, CO₂는 ${item.co2}ppm, 등급은 ${item.gradeText}입니다.`
+        "공기질 기록",
+        "왼쪽/오른쪽 구역 기록 저장",
+        `${time}에 기록했습니다. 왼쪽은 ${leftGrade.text}, 오른쪽은 ${rightGrade.text}이며 비교 결과는 '${comparison}'입니다.`
       );
+
+      document.getElementById("leftPm25").value = "";
+      document.getElementById("leftCo2").value = "";
+      document.getElementById("rightPm25").value = "";
+      document.getElementById("rightCo2").value = "";
+      document.getElementById("recordMemo").value = "";
+    }
+
+    function updateSummary(record) {
+      const leftSummary = document.getElementById("leftSummary");
+      const rightSummary = document.getElementById("rightSummary");
+
+      leftSummary.className = `summary-card ${record.leftGradeClass}`;
+      rightSummary.className = `summary-card ${record.rightGradeClass}`;
+
+      document.getElementById("leftGrade").textContent = `등급: ${record.leftGradeText}`;
+      document.getElementById("leftValue").textContent =
+        `PM2.5: ${record.leftPm25}㎍/㎥ / CO₂: ${record.leftCo2}ppm`;
+
+      document.getElementById("rightGrade").textContent = `등급: ${record.rightGradeText}`;
+      document.getElementById("rightValue").textContent =
+        `PM2.5: ${record.rightPm25}㎍/㎥ / CO₂: ${record.rightCo2}ppm`;
+    }
+
+    function toggleHistory() {
+      const wrap = document.getElementById("historyWrap");
+      wrap.classList.toggle("show");
+
+      if (wrap.classList.contains("show")) {
+        updateInfo(
+          "측정 기록",
+          "저장된 공기질 기록 확인",
+          "지금까지 저장한 왼쪽/오른쪽 공기질 기록을 확인하고 있습니다."
+        );
+      }
     }
 
     function renderHistory() {
       const tbody = document.getElementById("historyTableBody");
       tbody.innerHTML = "";
 
-      if (historyData.length === 0) {
+      if (airRecords.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="3">아직 기록이 없습니다.</td>
+            <td colspan="4">아직 기록이 없습니다.</td>
           </tr>
         `;
         return;
       }
 
-      historyData.forEach(item => {
-        const tr = document.createElement("tr");
+      airRecords.forEach(record => {
+        const memoText = record.memo ? `<br><small>메모: ${record.memo}</small>` : "";
 
+        const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${item.time}</td>
+          <td>${record.time}${memoText}</td>
           <td>
-            ${item.leftGrade}<br>
-            PM2.5 ${item.leftPm25}<br>
-            CO₂ ${item.leftCo2}
+            ${record.leftGradeText}<br>
+            PM2.5 ${record.leftPm25}<br>
+            CO₂ ${record.leftCo2}
           </td>
           <td>
-            ${item.rightGrade}<br>
-            PM2.5 ${item.rightPm25}<br>
-            CO₂ ${item.rightCo2}
+            ${record.rightGradeText}<br>
+            PM2.5 ${record.rightPm25}<br>
+            CO₂ ${record.rightCo2}
           </td>
+          <td>${record.comparison}</td>
         `;
 
         tbody.appendChild(tr);
       });
     }
 
-    function saveHistory() {
-      localStorage.setItem("airQualityHistory", JSON.stringify(historyData));
+    function showAverageRecord() {
+      const averageBox = document.getElementById("averageBox");
+
+      if (airRecords.length === 0) {
+        averageBox.innerHTML = "아직 평균을 계산할 기록이 없습니다.";
+        return;
+      }
+
+      const count = airRecords.length;
+
+      const leftPm25Avg = Math.round(
+        airRecords.reduce((sum, record) => sum + record.leftPm25, 0) / count
+      );
+
+      const leftCo2Avg = Math.round(
+        airRecords.reduce((sum, record) => sum + record.leftCo2, 0) / count
+      );
+
+      const rightPm25Avg = Math.round(
+        airRecords.reduce((sum, record) => sum + record.rightPm25, 0) / count
+      );
+
+      const rightCo2Avg = Math.round(
+        airRecords.reduce((sum, record) => sum + record.rightCo2, 0) / count
+      );
+
+      const leftGrade = getAirGrade(leftPm25Avg, leftCo2Avg);
+      const rightGrade = getAirGrade(rightPm25Avg, rightCo2Avg);
+      const comparison = getComparisonText(leftPm25Avg, leftCo2Avg, rightPm25Avg, rightCo2Avg);
+
+      let explanation = "";
+
+      if (comparison === "왼쪽이 더 좋음") {
+        explanation = "평균적으로 왼쪽 구역의 공기질이 오른쪽보다 더 좋게 기록되었습니다.";
+      } else if (comparison === "오른쪽이 더 좋음") {
+        explanation = "평균적으로 오른쪽 구역의 공기질이 왼쪽보다 더 좋게 기록되었습니다.";
+      } else {
+        explanation = "평균적으로 왼쪽과 오른쪽 구역의 공기질은 큰 차이가 없습니다.";
+      }
+
+      averageBox.innerHTML = `
+        <strong>평균 측정기록</strong><br><br>
+        기록 개수: ${count}개<br><br>
+
+        <strong>왼쪽 구역 평균</strong><br>
+        PM2.5: ${leftPm25Avg}㎍/㎥ / CO₂: ${leftCo2Avg}ppm<br>
+        등급: ${leftGrade.text}<br><br>
+
+        <strong>오른쪽 구역 평균</strong><br>
+        PM2.5: ${rightPm25Avg}㎍/㎥ / CO₂: ${rightCo2Avg}ppm<br>
+        등급: ${rightGrade.text}<br>
+
+        <div class="comparison-result">
+          <strong>비교 결과: ${comparison}</strong><br>
+          ${explanation}
+        </div>
+      `;
+
+      updateInfo(
+        "평균 측정기록",
+        "왼쪽/오른쪽 공기질 평균 비교",
+        `총 ${count}개의 기록을 기준으로 비교했습니다. 결과는 '${comparison}'입니다.`
+      );
     }
 
-    function loadHistory() {
-      const saved = localStorage.getItem("airQualityHistory");
+    function clearAirRecords() {
+      const ok = confirm("저장된 공기질 기록을 모두 삭제할까요?");
+
+      if (!ok) {
+        return;
+      }
+
+      airRecords = [];
+      localStorage.removeItem("airRecords");
+
+      renderHistory();
+
+      document.getElementById("lastRecordTime").textContent = "아직 기록 없음";
+      document.getElementById("leftSummary").className = "summary-card good";
+      document.getElementById("rightSummary").className = "summary-card good";
+      document.getElementById("leftGrade").textContent = "등급: -";
+      document.getElementById("leftValue").textContent = "PM2.5: - / CO₂: -";
+      document.getElementById("rightGrade").textContent = "등급: -";
+      document.getElementById("rightValue").textContent = "PM2.5: - / CO₂: -";
+      document.getElementById("averageBox").innerHTML =
+        "평균 측정기록 보기를 누르면 왼쪽/오른쪽 평균과 비교 결과가 표시됩니다.";
+
+      updateInfo(
+        "공기질 기록 삭제",
+        "전체 기록 삭제",
+        "저장된 공기질 기록을 모두 삭제했습니다."
+      );
+    }
+
+    function loadAirRecords() {
+      const saved = localStorage.getItem("airRecords");
 
       if (saved) {
-        historyData = JSON.parse(saved);
+        airRecords = JSON.parse(saved);
+      } else {
+        airRecords = [];
       }
 
       renderHistory();
-    }
 
-    function clearHistory() {
-      historyData = [];
-      localStorage.removeItem("airQualityHistory");
-      renderHistory();
-
-      updateInfo("기록", "측정 기록 삭제", "저장된 시간별 공기질 측정 기록을 삭제했습니다.");
-    }
-
-    function toggleAutoMeasure() {
-      const button = document.getElementById("autoButton");
-
-      if (autoMeasureTimer === null) {
-        measureAirQuality();
-
-        autoMeasureTimer = setInterval(function () {
-          measureAirQuality();
-        }, 10000);
-
-        button.textContent = "자동 측정 중지";
-        button.className = "danger-btn";
-
-        updateInfo("자동 측정", "자동 측정 시작", "10초마다 공기질을 자동 측정합니다.");
-      } else {
-        clearInterval(autoMeasureTimer);
-        autoMeasureTimer = null;
-
-        button.textContent = "자동 측정 시작";
-        button.className = "secondary-btn";
-
-        updateInfo("자동 측정", "자동 측정 중지", "자동 측정을 중지했습니다.");
+      if (airRecords.length > 0) {
+        document.getElementById("lastRecordTime").textContent = airRecords[0].time;
+        updateSummary(airRecords[0]);
+        showAverageRecord();
       }
     }
 
     window.addEventListener("load", function () {
       createStars();
       applyTimeTheme();
-      loadHistory();
+
+      loadStudentNames();
+      loadAirRecords();
 
       setInterval(applyTimeTheme, 60000);
 
       updateInfo(
         "안내",
-        "교실 공기질 대시보드",
-        "측정하기 버튼을 누르면 공기질과 측정 시각이 표시됩니다."
+        "교실 공기질 기록 대시보드",
+        "책상을 클릭하면 학생 이름을 입력할 수 있고, 공기질은 왼쪽/오른쪽 구역으로 나누어 기록할 수 있습니다."
       );
     });
   </script>
