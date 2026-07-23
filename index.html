@@ -165,7 +165,7 @@
 
     .dashboard {
       display: grid;
-      grid-template-columns: 520px 420px;
+      grid-template-columns: 520px 430px;
       justify-content: center;
       align-items: start;
       gap: 24px;
@@ -243,10 +243,6 @@
       background: #f97316;
     }
 
-    .danger-btn {
-      background: #dc2626;
-    }
-
     .info-box {
       background: rgba(248, 250, 252, 0.9);
       color: #1f2937;
@@ -308,6 +304,16 @@
       background: #dc2626;
     }
 
+    .grade-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
     .record-card {
       border-radius: 12px;
       padding: 12px;
@@ -336,6 +342,36 @@
       background: rgba(37, 99, 235, 0.08);
       border-radius: 8px;
       font-size: 13px;
+    }
+
+    .warning-box {
+      margin-top: 8px;
+      padding: 9px;
+      border-radius: 10px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      line-height: 1.45;
+    }
+
+    .solution-box {
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    body.night-theme .solution-box {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.45);
+    }
+
+    .solution-box ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
     }
 
     .student-seat-grid {
@@ -559,7 +595,7 @@
   <div class="app">
     <header>
       <h1>교실 공기질 대시보드</h1>
-      <p>교실을 왼쪽/오른쪽 구역으로 나누어 공기질 기록을 확인합니다.</p>
+      <p>교실을 왼쪽/오른쪽 구역으로 나누어 공기질 기록, 색상 경고, 개선 방안을 확인합니다.</p>
       <div class="theme-badge" id="themeBadge">현재 시간 확인 중...</div>
     </header>
 
@@ -719,7 +755,7 @@
 
           <div class="info-box">
             <span class="info-label">상태</span>
-            <p id="infoStatus">왼쪽 구역 또는 오른쪽 구역을 클릭하면 공기질 기록이 표시됩니다.</p>
+            <p id="infoStatus">왼쪽 구역 또는 오른쪽 구역을 클릭하면 공기질 기록, 색상 경고, 개선 방안이 표시됩니다.</p>
           </div>
         </aside>
 
@@ -759,6 +795,14 @@
             <div class="info-box">
               왼쪽 또는 오른쪽 구역을 선택해주세요.
             </div>
+          </div>
+        </aside>
+
+        <aside class="panel">
+          <h2>공기질 개선 방안</h2>
+
+          <div id="solutionResult" class="info-box">
+            구역을 선택하면 해당 구역의 평균 공기질을 기준으로 개선 방안이 표시됩니다.
           </div>
         </aside>
 
@@ -821,7 +865,7 @@
 
   <script>
     /*
-      여기에 너희가 실제로 측정한 공기질 데이터를 넣으면 됩니다.
+      여기에 실제 측정한 공기질 데이터를 넣으면 됩니다.
 
       zone:
       - "left"  = 왼쪽 구역
@@ -974,7 +1018,8 @@
         return {
           text: "좋음",
           className: "good",
-          score: 1
+          score: 1,
+          warning: "좋음: 공기질이 안정적인 상태입니다."
         };
       }
 
@@ -982,7 +1027,8 @@
         return {
           text: "보통",
           className: "normal",
-          score: 2
+          score: 2,
+          warning: "보통: 생활에는 큰 문제가 없지만 환기 상태를 확인하면 좋습니다."
         };
       }
 
@@ -990,15 +1036,43 @@
         return {
           text: "나쁨",
           className: "bad",
-          score: 3
+          score: 3,
+          warning: "나쁨: 환기 또는 공기질 관리가 필요한 상태입니다."
         };
       }
 
       return {
         text: "매우 나쁨",
         className: "very-bad",
-        score: 4
+        score: 4,
+        warning: "매우 나쁨: 즉시 환기하거나 공기질 개선 조치가 필요합니다."
       };
+    }
+
+    function getImprovementSuggestions(pm25, co2) {
+      const suggestions = [];
+
+      if (co2 > 1500) {
+        suggestions.push("CO₂ 농도가 매우 높습니다. 쉬는 시간에 문과 창문을 열어 5~10분 이상 강하게 환기하는 것이 좋습니다.");
+      } else if (co2 > 1000) {
+        suggestions.push("CO₂ 농도가 다소 높습니다. 수업 중간이나 쉬는 시간에 짧게라도 환기하는 것이 좋습니다.");
+      } else if (co2 > 800) {
+        suggestions.push("CO₂가 조금 올라가고 있습니다. 사람이 많은 시간에는 환기 상태를 확인해보세요.");
+      }
+
+      if (pm25 > 75) {
+        suggestions.push("PM2.5가 매우 높습니다. 실외 미세먼지가 나쁜 날에는 창문을 오래 열기보다 공기청정기 사용이나 먼지 발생 원인 확인이 필요합니다.");
+      } else if (pm25 > 35) {
+        suggestions.push("PM2.5가 높은 편입니다. 바닥 먼지, 칠판가루, 종이먼지 등을 줄이고 주변 정리를 하는 것이 좋습니다.");
+      } else if (pm25 > 15) {
+        suggestions.push("PM2.5가 보통 수준입니다. 청소 상태와 창문 개방 상태를 함께 확인하면 좋습니다.");
+      }
+
+      if (pm25 <= 15 && co2 <= 800) {
+        suggestions.push("현재 공기질이 좋은 편입니다. 지금처럼 주기적인 환기와 청결 상태를 유지하면 좋습니다.");
+      }
+
+      return suggestions;
     }
 
     function getZoneName(zone) {
@@ -1036,8 +1110,30 @@
         co2: co2Average,
         gradeText: grade.text,
         gradeClass: grade.className,
+        warning: grade.warning,
         score: pm25Average + co2Average / 40
       };
+    }
+
+    function renderSuggestions(pm25, co2) {
+      const suggestions = getImprovementSuggestions(pm25, co2);
+
+      let html = `
+        <div class="solution-box">
+          <strong>공기질 개선 방안</strong>
+          <ul>
+      `;
+
+      suggestions.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+
+      html += `
+          </ul>
+        </div>
+      `;
+
+      return html;
     }
 
     function selectZone(zone) {
@@ -1054,6 +1150,10 @@
           <div class="info-box">
             ${zoneName}에 저장된 공기질 기록이 없습니다.
           </div>
+        `;
+
+        document.getElementById("solutionResult").innerHTML = `
+          ${zoneName}에 저장된 공기질 기록이 없어 개선 방안을 표시할 수 없습니다.
         `;
 
         updateInfo(
@@ -1075,6 +1175,12 @@
           <p>CO₂ 평균: ${average.co2}ppm</p>
           <p>평균 등급: ${average.gradeText}</p>
         </div>
+
+        <div class="warning-box ${average.gradeClass}">
+          색상 경고: ${average.warning}
+        </div>
+
+        ${renderSuggestions(average.pm25, average.co2)}
       `;
 
       records.forEach(record => {
@@ -1085,15 +1191,29 @@
             <strong>${record.time}</strong>
             PM2.5: ${record.pm25}㎍/㎥<br>
             CO₂: ${record.co2}ppm<br>
-            등급: <span class="grade-badge ${grade.className}">${grade.text}</span>
+            등급:
+            <span class="grade-badge ${grade.className}">${grade.text}</span>
+
+            <div class="warning-box ${grade.className}">
+              색상 경고: ${grade.warning}
+            </div>
+
             <div class="memo">
               메모: ${record.memo ? record.memo : "메모 없음"}
             </div>
+
+            ${renderSuggestions(record.pm25, record.co2)}
           </div>
         `;
       });
 
       document.getElementById("zoneResult").innerHTML = html;
+
+      document.getElementById("solutionResult").innerHTML = `
+        <span class="info-label">${zoneName} 평균 기준</span>
+        <strong>${zoneName}의 평균 공기질 개선 방안</strong>
+        ${renderSuggestions(average.pm25, average.co2)}
+      `;
 
       updateInfo(
         "공기질",
@@ -1135,24 +1255,51 @@
 
       let result = "";
       let explanation = "";
+      let targetZone = null;
 
       if (Math.abs(left.score - right.score) < 3) {
         result = "왼쪽과 오른쪽이 비슷함";
         explanation = "두 구역의 평균 PM2.5와 CO₂ 차이가 크지 않습니다.";
       } else if (left.score < right.score) {
         result = "왼쪽 구역의 공기질이 더 좋음";
-        explanation = "왼쪽 구역의 평균 오염도 점수가 오른쪽보다 낮습니다.";
+        explanation = "오른쪽 구역의 평균 오염도 점수가 왼쪽보다 높습니다.";
+        targetZone = right;
       } else {
         result = "오른쪽 구역의 공기질이 더 좋음";
-        explanation = "오른쪽 구역의 평균 오염도 점수가 왼쪽보다 낮습니다.";
+        explanation = "왼쪽 구역의 평균 오염도 점수가 오른쪽보다 높습니다.";
+        targetZone = left;
+      }
+
+      let improvementHtml = "";
+
+      if (targetZone) {
+        improvementHtml = `
+          <br>
+          <strong>개선이 더 필요한 구역을 위한 방안</strong>
+          ${renderSuggestions(targetZone.pm25, targetZone.co2)}
+        `;
+      } else {
+        improvementHtml = `
+          <br>
+          <strong>전체 유지 방안</strong>
+          <div class="solution-box">
+            <ul>
+              <li>왼쪽과 오른쪽 모두 주기적으로 환기 상태를 확인합니다.</li>
+              <li>측정 시간대를 아침, 점심 후, 오후로 나누어 비교하면 더 정확한 분석이 가능합니다.</li>
+            </ul>
+          </div>
+        `;
       }
 
       document.getElementById("comparisonBox").innerHTML = `
         <span class="info-label">비교 결과</span>
         <strong>${result}</strong><br><br>
+
         왼쪽 평균: PM2.5 ${left.pm25}㎍/㎥ / CO₂ ${left.co2}ppm / ${left.gradeText}<br>
         오른쪽 평균: PM2.5 ${right.pm25}㎍/㎥ / CO₂ ${right.co2}ppm / ${right.gradeText}<br><br>
+
         ${explanation}
+        ${improvementHtml}
       `;
 
       updateInfo(
@@ -1326,7 +1473,7 @@
       updateInfo(
         "안내",
         "교실 공기질 대시보드",
-        "왼쪽 구역 또는 오른쪽 구역을 클릭하면 미리 저장된 공기질 기록과 메모가 표시됩니다."
+        "왼쪽 구역 또는 오른쪽 구역을 클릭하면 공기질 기록, 색상 경고, 메모, 개선 방안이 표시됩니다."
       );
     });
   </script>
