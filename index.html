@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>교실 구조 대시보드</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      background: #eef2f6;
+      color: #222;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin-top: 8px;
+      color: #666;
+      font-size: 15px;
+    }
+
+    .dashboard {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .classroom-card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    svg {
+      width: 470px;
+      height: 630px;
+      max-width: 90vw;
+      background: #ffffff;
+      display: block;
+    }
+
+    .classroom-border {
+      fill: none;
+      stroke: #000;
+      stroke-width: 4;
+    }
+
+    .desk {
+      fill: url(#woodPattern);
+      stroke: #000;
+      stroke-width: 4;
+    }
+
+    .desk-line {
+      stroke: rgba(80, 45, 20, 0.85);
+      stroke-width: 2;
+    }
+
+    .desk-text {
+      font-size: 20px;
+      font-weight: bold;
+      fill: rgba(255, 255, 255, 0.9);
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .attached-white {
+      fill: #ffffff;
+      stroke: #000000;
+      stroke-width: 4;
+    }
+
+    .window {
+      fill: url(#windowGradient);
+      stroke: #008fd3;
+      stroke-width: 2;
+      rx: 2;
+    }
+
+    .window.open {
+      stroke: #00c853;
+      stroke-width: 4;
+      filter: drop-shadow(0 0 6px rgba(0, 200, 83, 0.8));
+    }
+
+    .door {
+      fill: url(#doorWood);
+      stroke: #5b3519;
+      stroke-width: 2;
+      rx: 2;
+    }
+
+    .door-line {
+      stroke: rgba(60, 30, 10, 0.7);
+      stroke-width: 1.4;
+    }
+
+    .aircon {
+      fill: rgba(255, 255, 255, 0.35);
+      stroke: #ff1f2d;
+      stroke-width: 4;
+    }
+
+    .aircon.on {
+      fill: rgba(255, 31, 45, 0.13);
+      filter: drop-shadow(0 0 8px rgba(255, 31, 45, 0.8));
+    }
+
+    .aircon-text {
+      font-size: 17px;
+      fill: #ff1f2d;
+      font-weight: bold;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .clickable {
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .clickable:hover {
+      opacity: 0.75;
+    }
+
+    .info-panel {
+      width: 320px;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .info-panel h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .info-box {
+      background: #f7f9fb;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .info-label {
+      display: block;
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 6px;
+    }
+
+    .info-box strong {
+      font-size: 18px;
+    }
+
+    .info-box p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .status-list {
+      margin-top: 20px;
+      background: #f1f5f9;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .status-list h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .status-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .status-list li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .on-text {
+      color: #008f5a;
+      font-weight: bold;
+    }
+
+    .off-text {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .guide {
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .info-panel {
+        width: 100%;
+        max-width: 470px;
+      }
+
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1>교실 구조 대시보드</h1>
+      <p>책상, 에어컨, 창문, 문을 클릭하면 정보를 확인할 수 있습니다.</p>
+    </header>
+
+    <main class="dashboard">
+      <section class="classroom-card">
+        <svg viewBox="0 0 470 630" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- 책상 나무 패턴 -->
+            <pattern id="woodPattern" patternUnits="userSpaceOnUse" width="90" height="40">
+              <rect width="90" height="40" fill="#c98b4a" />
+              <path d="M0 8 C20 2, 35 14, 55 8 S80 5, 90 12"
+                    fill="none" stroke="#8b4f22" stroke-width="1.4" opacity="0.65" />
+              <path d="M0 22 C18 18, 35 28, 54 22 S78 18, 90 25"
+                    fill="none" stroke="#9a5b2c" stroke-width="1.2" opacity="0.6" />
+              <path d="M0 34 C25 26, 45 38, 70 31 S84 30, 90 33"
+                    fill="none" stroke="#7a431e" stroke-width="1.1" opacity="0.55" />
+              <path d="M18 0 C12 10, 26 16, 16 28 C12 33, 14 38, 18 40"
+                    fill="none" stroke="#a05c2a" stroke-width="1" opacity="0.5" />
+              <path d="M58 0 C52 9, 66 17, 56 29 C52 34, 54 38, 58 40"
+                    fill="none" stroke="#a05c2a" stroke-width="1" opacity="0.5" />
+            </pattern>
+
+            <!-- 문 나무 디자인 -->
+            <linearGradient id="doorWood" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7a451f" />
+              <stop offset="45%" stop-color="#b7793d" />
+              <stop offset="100%" stop-color="#6b3a18" />
+            </linearGradient>
+
+            <!-- 창문 디자인 -->
+            <linearGradient id="windowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#c8f2ff" />
+              <stop offset="50%" stop-color="#3fc3f4" />
+              <stop offset="100%" stop-color="#007fc4" />
+            </linearGradient>
+          </defs>
+
+          <!-- 교실 외곽 : 큰 검은색 네모, 선을 살짝 얇게 유지 -->
+          <rect class="classroom-border" x="24" y="16" width="428" height="600" />
+
+          <!-- 문 : 기존 회색선 크기만큼 나무 문 디자인 -->
+          <g class="clickable" onclick="selectDoor()">
+            <rect class="door" x="13" y="38" width="7" height="120" />
+            <line class="door-line" x1="16.5" y1="45" x2="16.5" y2="150" />
+          </g>
+
+          <!-- 창문 : 얇은 창문 디자인 -->
+          <g class="clickable" onclick="toggleWindow('window1', '창문 1')">
+            <rect id="window1" class="window" x="445" y="112" width="7" height="94" />
+          </g>
+
+          <g class="clickable" onclick="toggleWindow('window2', '창문 2')">
+            <rect id="window2" class="window" x="448" y="277" width="7" height="79" />
+          </g>
+
+          <g class="clickable" onclick="toggleWindow('window3', '창문 3')">
+            <rect id="window3" class="window" x="448" y="425" width="7" height="91" />
+          </g>
+
+          <!-- 책상 1 : 4등분 + 나무 디자인 -->
+          <g class="clickable" onclick="selectDesk('책상 1')">
+            <rect class="desk" x="70" y="53" width="145" height="97" />
+            <line class="desk-line" x1="142.5" y1="53" x2="142.5" y2="150" />
+            <line class="desk-line" x1="70" y1="101.5" x2="215" y2="101.5" />
+            <text class="desk-text" x="142.5" y="101.5">1</text>
+          </g>
+
+          <!-- 책상 2 -->
+          <g class="clickable" onclick="selectDesk('책상 2')">
+            <rect class="desk" x="258" y="51" width="152" height="96" />
+            <line class="desk-line" x1="334" y1="51" x2="334" y2="147" />
+            <line class="desk-line" x1="258" y1="99" x2="410" y2="99" />
+            <text class="desk-text" x="334" y="99">2</text>
+          </g>
+
+          <!-- 에어컨 1 -->
+          <g class="clickable" onclick="toggleAircon('aircon1', '에어컨 1')">
+            <rect id="aircon1" class="aircon" x="279" y="116" width="114" height="109" />
+            <text class="aircon-text" x="336" y="171">A/C</text>
+          </g>
+
+          <!-- 책상 3 -->
+          <g class="clickable" onclick="selectDesk('책상 3')">
+            <rect class="desk" x="65" y="193" width="153" height="101" />
+            <line class="desk-line" x1="141.5" y1="193" x2="141.5" y2="294" />
+            <line class="desk-line" x1="65" y1="243.5" x2="218" y2="243.5" />
+            <text class="desk-text" x="141.5" y="243.5">3</text>
+          </g>
+
+          <!-- 책상 4 -->
+          <g class="clickable" onclick="selectDesk('책상 4')">
+            <rect class="desk" x="259" y="197" width="153" height="95" />
+            <line class="desk-line" x1="335.5" y1="197" x2="335.5" y2="292" />
+            <line class="desk-line" x1="259" y1="244.5" x2="412" y2="244.5" />
+            <text class="desk-text" x="335.5" y="244.5">4</text>
+          </g>
+
+          <!-- 왼쪽 아래 책상에 붙어있는 작은 사각형 : 흰색으로 칠함 -->
+          <rect class="attached-white" x="43" y="370" width="26" height="50" />
+
+          <!-- 책상 5 : 붙어있는 작은 사각형은 제외하고 큰 책상만 4등분 -->
+          <g class="clickable" onclick="selectDesk('책상 5')">
+            <rect class="desk" x="68" y="340" width="145" height="100" />
+            <line class="desk-line" x1="140.5" y1="340" x2="140.5" y2="440" />
+            <line class="desk-line" x1="68" y1="390" x2="213" y2="390" />
+            <text class="desk-text" x="140.5" y="390">5</text>
+          </g>
+
+          <!-- 책상 6 -->
+          <g class="clickable" onclick="selectDesk('책상 6')">
+            <rect class="desk" x="254" y="343" width="153" height="96" />
+            <line class="desk-line" x1="330.5" y1="343" x2="330.5" y2="439" />
+            <line class="desk-line" x1="254" y1="391" x2="407" y2="391" />
+            <text class="desk-text" x="330.5" y="391">6</text>
+          </g>
+
+          <!-- 에어컨 2 -->
+          <g class="clickable" onclick="toggleAircon('aircon2', '에어컨 2')">
+            <rect id="aircon2" class="aircon" x="275" y="411" width="103" height="97" />
+            <text class="aircon-text" x="326.5" y="459.5">A/C</text>
+          </g>
+
+          <!-- 책상 7 -->
+          <g class="clickable" onclick="selectDesk('책상 7')">
+            <rect class="desk" x="252" y="470" width="152" height="96" />
+            <line class="desk-line" x1="328" y1="470" x2="328" y2="566" />
+            <line class="desk-line" x1="252" y1="518" x2="404" y2="518" />
+            <text class="desk-text" x="328" y="518">7</text>
+          </g>
+        </svg>
+      </section>
+
+      <aside class="info-panel">
+        <h2>선택 정보</h2>
+
+        <div class="info-box">
+          <span class="info-label">종류</span>
+          <strong id="infoType">안내</strong>
+        </div>
+
+        <div class="info-box">
+          <span class="info-label">이름</span>
+          <strong id="infoName">교실 구조 대시보드</strong>
+        </div>
+
+        <div class="info-box">
+          <span class="info-label">상태</span>
+          <p id="infoStatus">책상, 에어컨, 창문, 문을 클릭해보세요.</p>
+        </div>
+
+        <div class="status-list">
+          <h3>현재 상태</h3>
+          <ul>
+            <li>
+              에어컨 1 :
+              <span id="aircon1Status" class="off-text">OFF</span>
+            </li>
+            <li>
+              에어컨 2 :
+              <span id="aircon2Status" class="off-text">OFF</span>
+            </li>
+            <li>
+              창문 1 :
+              <span id="window1Status" class="off-text">닫힘</span>
+            </li>
+            <li>
+              창문 2 :
+              <span id="window2Status" class="off-text">닫힘</span>
+            </li>
+            <li>
+              창문 3 :
+              <span id="window3Status" class="off-text">닫힘</span>
+            </li>
+          </ul>
+        </div>
+
+        <p class="guide">
+          이 버전은 GitHub Pages에 바로 올릴 수 있는 정적 웹 앱입니다.
+          나중에 Firebase나 서버를 연결하면 실제 데이터 저장도 가능합니다.
+        </p>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const airconState = {
+      aircon1: false,
+      aircon2: false
+    };
+
+    const windowState = {
+      window1: false,
+      window2: false,
+      window3: false
+    };
+
+    function updateInfo(type, name, status) {
+      document.getElementById("infoType").textContent = type;
+      document.getElementById("infoName").textContent = name;
+      document.getElementById("infoStatus").textContent = status;
+    }
+
+    function selectDesk(name) {
+      updateInfo(
+        "책상",
+        name,
+        "4등분된 나무 디자인 책상입니다. 나중에 학생 이름이나 자리 정보를 연결할 수 있습니다."
+      );
+    }
+
+    function selectDoor() {
+      updateInfo(
+        "문",
+        "교실 출입문",
+        "기존 회색선 위치와 크기에 맞춘 나무 문 디자인입니다."
+      );
+    }
+
+    function toggleAircon(id, name) {
+      airconState[id] = !airconState[id];
+
+      const airconElement = document.getElementById(id);
+      const statusElement = document.getElementById(id + "Status");
+
+      if (airconState[id]) {
+        airconElement.classList.add("on");
+        statusElement.textContent = "ON";
+        statusElement.className = "on-text";
+
+        updateInfo(
+          "에어컨",
+          name,
+          "현재 ON 상태입니다. 빨간색 테두리와 빛 효과로 표시됩니다."
+        );
+      } else {
+        airconElement.classList.remove("on");
+        statusElement.textContent = "OFF";
+        statusElement.className = "off-text";
+
+        updateInfo(
+          "에어컨",
+          name,
+          "현재 OFF 상태입니다."
+        );
+      }
+    }
+
+    function toggleWindow(id, name) {
+      windowState[id] = !windowState[id];
+
+      const windowElement = document.getElementById(id);
+      const statusElement = document.getElementById(id + "Status");
+
+      if (windowState[id]) {
+        windowElement.classList.add("open");
+        statusElement.textContent = "열림";
+        statusElement.className = "on-text";
+
+        updateInfo(
+          "창문",
+          name,
+          "현재 열림 상태입니다. 초록색 빛 효과로 표시됩니다."
+        );
+      } else {
+        windowElement.classList.remove("open");
+        statusElement.textContent = "닫힘";
+        statusElement.className = "off-text";
+
+        updateInfo(
+          "창문",
+          name,
+          "현재 닫힘 상태입니다."
+        );
+      }
+    }
+  </script>
+</body>
+</html>
